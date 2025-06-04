@@ -1,0 +1,245 @@
+.patient-lookup {
+  padding: 200px;
+  max-width: 5000px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.patient-lookup h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.lookup-form {
+  margin-top: 20px;
+  background: #fff;
+  padding: 190px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 0 20px;
+}
+
+.patient-id-input {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  flex: 1;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.patient-id-input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.submit-button {
+  padding: 12px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc3545;
+  margin: 10px 20px;
+  padding: 10px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+/* Patient Information Styles */
+.patient-info {
+  margin: 20px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.patient-info h3 {
+  color: #495057;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+  padding: 0 10px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 0 10px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.info-item .label {
+  font-weight: 500;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.info-item .value {
+  color: #212529;
+  font-size: 1rem;
+}
+
+/* Measures Container Styles */
+.measures-container {
+  margin: 20px;
+}
+
+.measures-container h3 {
+  color: #495057;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  padding: 0 10px;
+}
+
+.measure-wrapper {
+  margin-bottom: 30px;
+}
+
+.measure-section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+}
+
+.measure-header {
+  padding: 15px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.measure-header h3 {
+  margin: 0;
+  color: #495057;
+  font-size: 1.2rem;
+}
+
+.measure-details {
+  display: flex;
+  gap: 15px;
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.measure-id, .measure-cadence {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Table Styles */
+.feedback-table-container {
+  overflow-x: auto;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.feedback-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+}
+
+.feedback-table th,
+.feedback-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #dee2e6;
+}
+
+.feedback-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  white-space: nowrap;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.feedback-table td {
+  color: #212529;
+}
+
+.feedback-table tr:last-child td {
+  border-bottom: none;
+}
+
+.feedback-table tr td:last-child {
+  border-right: none;
+}
+
+.feedback-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* No Data Message */
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  margin: 20px;
+  font-style: italic;
+  border: 1px solid #dee2e6;
+}
+
+.measure-info {
+  text-align: left;
+  margin-bottom: 15px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.measure-info p {
+  margin: 8px 0;
+  color: #495057;
+}
+
+.measure-info strong {
+  color: #6c757d;
+  margin-right: 8px;
+}
+
+.no-records {
+  color: #6c757d;
+  font-style: italic;
+  margin-top: 10px;
+} 
