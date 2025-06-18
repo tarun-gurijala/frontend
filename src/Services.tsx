@@ -1323,27 +1323,67 @@ const Services = () => {
     try {
       setLoading(true);
       setError(null);
+
+      // Format the patient data according to the required structure
+      const formattedPatient = {
+        legacyPatientId: updatedPatient.legacyPatientId,
+        patientName: {
+          firstName: updatedPatient.patientName.firstName,
+          lastName: updatedPatient.patientName.lastName,
+        },
+        emailId: updatedPatient.emailId,
+        status: "Active",
+        assignedMeasures: updatedPatient.assignedMeasures.map((measure) => ({
+          measureId: measure.measureId,
+          measureName: measure.measureName,
+          measuringCadence: {
+            frequencyTimes: measure.measuringCadence.frequencyTimes,
+            frequencyUnit: measure.measuringCadence.frequencyUnit,
+          },
+        })),
+        createdBy: "RY",
+      };
+
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/patients/${updatedPatient._id}`,
+        `${import.meta.env.VITE_API_URL}/api/patients/`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(updatedPatient),
+          body: JSON.stringify(formattedPatient),
         }
       );
+      console.log(updatedPatient.legacyPatientId);
 
       if (!response.ok) {
         throw new Error("Failed to update patient");
       }
 
+      const updatedPatientData = await response.json();
       setPatients(
-        patients.map((p) => (p._id === updatedPatient._id ? updatedPatient : p))
+        patients.map((p) =>
+          p._id === updatedPatient._id ? updatedPatientData : p
+        )
       );
       setEditingPatient(null);
+      toast({
+        title: "Success",
+        description: "Patient updated successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
+      toast({
+        title: "Error",
+        description:
+          err instanceof Error ? err.message : "Failed to update patient",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -1353,6 +1393,27 @@ const Services = () => {
     try {
       setLoading(true);
       setError(null);
+
+      // Format the patient data according to the required structure
+      const formattedPatient = {
+        legacyPatientId: newPatient.legacyPatientId,
+        patientName: {
+          firstName: newPatient.patientName.firstName,
+          lastName: newPatient.patientName.lastName,
+        },
+        emailId: newPatient.emailId,
+        status: "Active",
+        assignedMeasures: newPatient.assignedMeasures.map((measure) => ({
+          measureId: measure.measureId,
+          measureName: measure.measureName,
+          measuringCadence: {
+            frequencyTimes: measure.measuringCadence.frequencyTimes,
+            frequencyUnit: measure.measuringCadence.frequencyUnit,
+          },
+        })),
+        createdBy: "RY",
+      };
+
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/patients`,
         {
@@ -1360,7 +1421,7 @@ const Services = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(newPatient),
+          body: JSON.stringify(formattedPatient),
         }
       );
 
@@ -1371,8 +1432,23 @@ const Services = () => {
       const addedPatient = await response.json();
       setPatients([...patients, addedPatient]);
       setIsAddModalOpen(false);
+      toast({
+        title: "Success",
+        description: "Patient added successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
+      toast({
+        title: "Error",
+        description:
+          err instanceof Error ? err.message : "Failed to add patient",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     } finally {
       setLoading(false);
     }

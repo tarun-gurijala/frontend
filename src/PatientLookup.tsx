@@ -54,13 +54,11 @@ const PatientLookup: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log("Received data:", data);
       setPatientData(data);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load patient data"
       );
-      console.error("Error fetching patient data:", err);
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +78,6 @@ const PatientLookup: React.FC = () => {
   const getColumnHeaders = (feedbackRows: FeedbackRow[]): string[] => {
     if (feedbackRows.length === 0) return [];
 
-    // Get all unique keys from all feedback rows
     const allKeys = new Set<string>();
     feedbackRows.forEach((row) => {
       Object.keys(row).forEach((key) => allKeys.add(key));
@@ -129,7 +126,6 @@ const PatientLookup: React.FC = () => {
           </div>
         ) : (
           <div className="no-data">
-            <div className="measure-info"></div>
             <p className="no-records">
               No feedback records available for this measure
             </p>
@@ -145,7 +141,7 @@ const PatientLookup: React.FC = () => {
       <div className="lookup-form">
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <h3 color="#000000">Patient ID:</h3>
+            <h3>Patient ID:</h3>
             <input
               type="text"
               placeholder="Enter Patient ID"
@@ -172,10 +168,9 @@ const PatientLookup: React.FC = () => {
               <div className="info-item">
                 <span className="label">
                   <strong>Patient ID:</strong> {patientData.patientId} ||{" "}
-                  <strong>Legacy ID:</strong>
-                  {patientData.legacyPatientId} || <strong>Name:</strong>
-                  {patientData.patientName.firstName}{" "}
-                  {patientData.patientName.lastName} || <strong>Email:</strong>
+                  <strong>Legacy ID:</strong> {patientData.legacyPatientId} ||{" "}
+                  <strong>Name:</strong> {patientData.patientName.firstName}{" "}
+                  {patientData.patientName.lastName} || <strong>Email:</strong>{" "}
                   {patientData.emailId}
                 </span>
               </div>
@@ -186,7 +181,7 @@ const PatientLookup: React.FC = () => {
         {patientData?.measuresWithFeedback && (
           <div className="measures-container">
             <h3>Measures and Feedback</h3>
-            {patientData.measuresWithFeedback.map((measure, index) => (
+            {patientData.measuresWithFeedback.map((measure) => (
               <div key={measure.measureId} className="measure-wrapper">
                 {renderFeedbackTable(measure)}
               </div>

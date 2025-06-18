@@ -22,13 +22,6 @@ function Login({ onLogin }: LoginProps) {
       return;
     }
 
-    const requestBody = {
-      userName,
-      password,
-    };
-
-    console.log("API Request Payload:", requestBody);
-
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/userProfiles/login`,
@@ -37,14 +30,11 @@ function Login({ onLogin }: LoginProps) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify({ userName, password }),
         }
       );
 
-      console.log("API Response Status:", response.status);
-
       if (response.status === 200) {
-        // Check if the user is admin based on the credentials
         const userType =
           userName === "Admin" && password === "admin" ? "Admin" : "User";
         onLogin(userType);
@@ -52,7 +42,6 @@ function Login({ onLogin }: LoginProps) {
         setError("Login Failed");
       }
     } catch (error) {
-      console.log("API Error:", error);
       setError("Login Failed");
     } finally {
       setIsLoading(false);

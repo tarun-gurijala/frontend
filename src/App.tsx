@@ -55,11 +55,9 @@ function Sidebar({
       >
         <div className="sidebar-content">
           <div className="logo-container">
-            <img src={logo} alt="XYZ Company Logo" className="logo" />
+            <img src={logo} alt="Company Logo" className="logo" />
           </div>
-          <h2>
-            INTERPERSONAL <br></br>P S Y C H I A T R Y
-          </h2>
+          <h2>INTERPERSONAL PSYCHIATRY</h2>
           <div className="user-info">
             <span className="user-type">
               {userType === "Admin" ? "Administrator" : "User"}
@@ -105,7 +103,7 @@ function Sidebar({
                   Services
                 </a>
               </li>
-              {userType === "admin" && (
+              {userType === "Admin" && (
                 <li>
                   <a
                     href="#"
