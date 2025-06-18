@@ -31,7 +31,7 @@ function Login({ onLogin }: LoginProps) {
 
     try {
       const response = await fetch(
-        "http://64.126.41.240:5010/api/userProfiles/login",
+        `${import.meta.env.VITE_API_URL}/api/userProfiles/login`,
         {
           method: "PUT",
           headers: {
@@ -62,7 +62,7 @@ function Login({ onLogin }: LoginProps) {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1>Welcome to XYZ Company</h1>
+        <h1>Welcome to INTERPERSONAL PSYCHIATRY</h1>
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label htmlFor="username">Username</label>

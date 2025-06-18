@@ -1,0 +1,153 @@
+.patient-details-page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  padding: 0.5rem 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #495057;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+.page-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.8rem;
+}
+
+.patient-info {
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  padding: 0 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.info-item .label {
+  font-weight: 500;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.measures-container {
+  margin-top: 2rem;
+}
+
+.measures-container h3 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.measure-section {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.measure-header {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.measure-header h3 {
+  margin: 0;
+  color: #495057;
+  font-size: 1.2rem;
+}
+
+.measure-details {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.feedback-table-container {
+  overflow-x: auto;
+  padding: 1rem;
+}
+
+.feedback-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.feedback-table th,
+.feedback-table td {
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  text-align: left;
+}
+
+.feedback-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.feedback-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.feedback-table tr:hover {
+  background-color: #e9ecef;
+}
+
+.no-data {
+  padding: 2rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.error-message {
+  color: #dc3545;
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+} 

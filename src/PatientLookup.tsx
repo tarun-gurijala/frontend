@@ -44,7 +44,9 @@ const PatientLookup: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://64.126.41.240:5010/api/patientFeedback/byLegacyPatientId/${patientId}`
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/patientFeedback/byLegacyPatientId/${patientId}`
       );
 
       if (!response.ok) {
@@ -143,6 +145,7 @@ const PatientLookup: React.FC = () => {
       <div className="lookup-form">
         <form onSubmit={handleSubmit}>
           <div className="input-group">
+            <h3 color="#000000">Patient ID:</h3>
             <input
               type="text"
               placeholder="Enter Patient ID"
@@ -167,23 +170,14 @@ const PatientLookup: React.FC = () => {
             <h3>Patient Information</h3>
             <div className="info-grid">
               <div className="info-item">
-                <span className="label">Patient ID:</span>
-                <span className="value">{patientData.patientId}</span>
-              </div>
-              <div className="info-item">
-                <span className="label">Legacy ID:</span>
-                <span className="value">{patientData.legacyPatientId}</span>
-              </div>
-              <div className="info-item">
-                <span className="label">Name:</span>
-                <span className="value">
+                <span className="label">
+                  <strong>Patient ID:</strong> {patientData.patientId} ||{" "}
+                  <strong>Legacy ID:</strong>
+                  {patientData.legacyPatientId} || <strong>Name:</strong>
                   {patientData.patientName.firstName}{" "}
-                  {patientData.patientName.lastName}
+                  {patientData.patientName.lastName} || <strong>Email:</strong>
+                  {patientData.emailId}
                 </span>
-              </div>
-              <div className="info-item">
-                <span className="label">Email:</span>
-                <span className="value">{patientData.emailId}</span>
               </div>
             </div>
           </div>
