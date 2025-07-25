@@ -18,12 +18,9 @@ body {
 
 /* App container */
 .app-container {
-  min-height: 100vh;
-  width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* Sidebar trigger */
@@ -40,7 +37,7 @@ body {
 .sidebar {
   position: fixed;
   left: -300px;
-  top: 0;
+  top: 100px;
   width: 300px;
   height: 100vh;
   background-color: #c1d12e;
@@ -156,6 +153,7 @@ body {
 
 /* Main content */
 .main-content {
+  flex: 1;
   margin-top: 2.5rem;
   padding: 2rem;
   width: 100%;
@@ -170,10 +168,11 @@ header {
   text-align: center;
   margin-bottom: 3rem;
   width: 100%;
+  color: #26598d
 }
 
 header h1 {
-  color: white;
+  color: #26598d;
   font-size: 2.5rem;
   margin-bottom: 1rem;
   text-align: center;
@@ -445,19 +444,33 @@ section p {
   top: 0;
   left: 0;
   right: 0;
-  background-color: #d12e2e;
+  background-color: #41127f;
   color: white;
-  padding: 0.5rem 2rem;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   z-index: 1000;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
 }
 
 .navbar-left, .navbar-right {
   display: flex;
   gap: 2rem;
+  align-items: center;
+}
+
+.navbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.top-navbar-logo {
+  height: 80px;
+  width: auto;
+  display: block;
 }
 
 .navbar-item {
@@ -1118,4 +1131,63 @@ section p {
 
 .black-input::placeholder {
   color: #6c757d;
+}
+
+.footer {
+  width: 100%;
+  background: #23272f;
+  color: #fff;
+  padding: 1.2rem 0;
+  text-align: center;
+  font-size: 1rem;
+  margin-top: 2rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-section {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.footer-left {
+  text-align: left;
+}
+
+.footer-center {
+  text-align: center;
+}
+
+.footer-right {
+  text-align: right;
+}
+
+button, .login-button {
+  background-color: #26598d !important;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+button:hover, .login-button:hover {
+  background-color: #1d4066 !important;
+}
+
+button:focus, .login-button:focus {
+  outline: 2px solid #26598d;
+  outline-offset: 2px;
 }

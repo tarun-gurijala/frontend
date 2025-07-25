@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import "./Services.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Badge,
@@ -44,6 +45,7 @@ import {
   MenuButton,
   MenuList,
   useToast,
+  background,
 } from "@chakra-ui/react";
 import {
   ChevronDownIcon,
@@ -120,6 +122,7 @@ interface Patient {
   createdAt: string;
   updatedAt: string;
   __v: number;
+  inviteSent?: boolean;
 }
 
 interface EditPatientModalProps {
@@ -179,6 +182,72 @@ interface PatientData {
   emailId: string;
   measuresWithFeedback: Measure[];
 }
+
+const hardcodedPatients: Patient[] = [
+  {
+    _id: "1",
+    patientId: 101,
+    legacyPatientId: "LGCY-001",
+    patientName: { firstName: "John", lastName: "Doe" },
+    emailId: "john.doe@example.com",
+    assignedMeasures: [
+      {
+        _id: "m1",
+        measureId: 1,
+        measureName: "Blood Pressure",
+        measuringCadence: { frequencyTimes: 1, frequencyUnit: "day" },
+      },
+      {
+        _id: "m2",
+        measureId: 2,
+        measureName: "Glucose Level",
+        measuringCadence: { frequencyTimes: 2, frequencyUnit: "day" },
+      },
+    ],
+    createdBy: "System",
+    createdAt: "2023-01-15T09:00:00Z",
+    updatedAt: "2023-05-20T14:30:00Z",
+    __v: 0,
+  },
+  {
+    _id: "2",
+    patientId: 102,
+    legacyPatientId: "LGCY-002",
+    patientName: { firstName: "Jane", lastName: "Smith" },
+    emailId: "jane.smith@example.com",
+    assignedMeasures: [
+      {
+        _id: "m3",
+        measureId: 3,
+        measureName: "Heart Rate",
+        measuringCadence: { frequencyTimes: 3, frequencyUnit: "week" },
+      },
+    ],
+    createdBy: "System",
+    createdAt: "2023-02-20T11:00:00Z",
+    updatedAt: "2023-05-21T16:45:00Z",
+    __v: 0,
+  },
+  {
+    _id: "3",
+    patientId: 103,
+    legacyPatientId: "LGCY-003",
+    patientName: { firstName: "Peter", lastName: "Jones" },
+    emailId: "peter.jones@example.com",
+    assignedMeasures: [
+      {
+        _id: "m4",
+        measureId: 1,
+        measureName: "Blood Pressure",
+        measuringCadence: { frequencyTimes: 1, frequencyUnit: "day" },
+      },
+    ],
+    createdBy: "System",
+    createdAt: "2023-03-10T18:00:00Z",
+    updatedAt: "2023-05-19T10:00:00Z",
+    __v: 0,
+  },
+];
 
 const EditModal = ({
   isOpen,
@@ -688,6 +757,7 @@ const EditPatientModal = ({
   onSave,
   toast,
 }: EditPatientModalProps) => {
+  const navigate = useNavigate();
   const [editedPatient, setEditedPatient] = useState<Patient>(patient);
   const [measures, setMeasures] = useState<Measure[]>([]);
   const [loading, setLoading] = useState(false);
@@ -892,42 +962,42 @@ const EditPatientModal = ({
     }
   };
 
-  const handleInvite = async (patient: Patient) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/userProfiles/invite/${
-          patient.legacyPatientId
-        }`,
-        {
-          method: "POST",
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to send invitation");
-      }
-      toast({
-        title: "Success",
-        description: "Invitation sent successfully",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-      toast({
-        title: "Error",
-        description:
-          err instanceof Error ? err.message : "Failed to send invitation",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleInvite = async (patient: Patient) => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+  //     const response = await fetch(
+  //       `${import.meta.env.VITE_API_URL}/api/userProfiles/invite/${
+  //         patient.patientId
+  //       }`,
+  //       {
+  //         method: "POST",
+  //       }
+  //     );
+  //     if (!response.ok) {
+  //       throw new Error("Failed to send invitation");
+  //     }
+  //     toast({
+  //       title: "Success",
+  //       description: "Invitation sent successfully",
+  //       status: "success",
+  //       duration: 5000,
+  //       isClosable: true,
+  //     });
+  //   } catch (err) {
+  //     setError(err instanceof Error ? err.message : "An error occurred");
+  //     toast({
+  //       title: "Error",
+  //       description:
+  //         err instanceof Error ? err.message : "Failed to send invitation",
+  //       status: "error",
+  //       duration: 5000,
+  //       isClosable: true,
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl" isCentered>
@@ -1250,7 +1320,7 @@ const Services = () => {
   const [patients, setPatients] = useState<Patient[]>(() => {
     // Initialize from localStorage if available
     const savedPatients = localStorage.getItem("searchResults");
-    return savedPatients ? JSON.parse(savedPatients) : [];
+    return savedPatients ? JSON.parse(savedPatients) : hardcodedPatients;
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1262,11 +1332,12 @@ const Services = () => {
   const [viewingPatient, setViewingPatient] = useState<Patient | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isInviteSent, setIsInviteSent] = useState(false);
 
   // Clear search results when navigating directly to services
   useEffect(() => {
     if (!location.state?.preserveSearch) {
-      setPatients([]);
+      setPatients(hardcodedPatients);
       setSearchTerm("");
       localStorage.removeItem("searchResults");
       localStorage.removeItem("searchTerm");
@@ -1345,7 +1416,9 @@ const Services = () => {
       };
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/patients/`,
+        `${import.meta.env.VITE_API_URL}/api/patients/${
+          updatedPatient.patientId
+        }`,
         {
           method: "PUT",
           headers: {
@@ -1355,15 +1428,36 @@ const Services = () => {
         }
       );
       console.log(updatedPatient.legacyPatientId);
-
+      console.log(response);
       if (!response.ok) {
         throw new Error("Failed to update patient");
       }
 
       const updatedPatientData = await response.json();
+      console.log("API response for updated patient:", updatedPatientData);
+
+      if (
+        !updatedPatientData ||
+        (Array.isArray(updatedPatientData) && updatedPatientData.length === 0)
+      ) {
+        setError("No patient data returned from server.");
+        setLoading(false);
+        return;
+      }
+
       setPatients(
         patients.map((p) =>
-          p._id === updatedPatient._id ? updatedPatientData : p
+          p._id === updatedPatient._id
+            ? Array.isArray(updatedPatientData) &&
+              updatedPatientData[0] &&
+              updatedPatientData[0].patientName
+              ? updatedPatientData[0]
+              : !Array.isArray(updatedPatientData) &&
+                updatedPatientData &&
+                updatedPatientData.patientName
+              ? updatedPatientData
+              : p // fallback to previous patient if invalid
+            : p
         )
       );
       setEditingPatient(null);
@@ -1460,15 +1554,17 @@ const Services = () => {
       setError(null);
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/userProfiles/invite/${
-          patient.legacyPatientId
+          patient.patientId
         }`,
         {
           method: "POST",
         }
       );
+      console.log(response);
       if (!response.ok) {
         throw new Error("Failed to send invitation");
       }
+      patient.inviteSent = true;
       toast({
         title: "Success",
         description: "Invitation sent successfully",
@@ -1493,9 +1589,9 @@ const Services = () => {
 
   return (
     <div className="patient-lookup">
-      <Container maxW="container.xl" py={8}>
+      <Container className="container-test" maxW="container.xl" py={8}>
         <div className="lookup-form">
-          <Box mb={6}>
+          <Box minWidth={"900px"} mb={6}>
             <Heading size="lg" mb={4}>
               Patient Management
             </Heading>
@@ -1514,9 +1610,9 @@ const Services = () => {
                 Search
               </Button>
               <Button
+                paddingX={"25px"}
                 colorScheme="green"
                 onClick={() => setIsAddModalOpen(true)}
-                leftIcon={<AddIcon />}
               >
                 Add Patient
               </Button>
@@ -1540,7 +1636,7 @@ const Services = () => {
             <Box borderWidth={1} borderRadius="lg" p={4} borderColor="gray.200">
               <Table variant="simple">
                 <Thead>
-                  <Tr>
+                  <Tr backgroundColor={"#57cfff"}>
                     <Th>Legacy Patient ID</Th>
                     <Th>Patient Name</Th>
                     <Th>Email</Th>
@@ -1549,63 +1645,80 @@ const Services = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {patients.map((patient) => (
-                    <Tr key={patient._id}>
-                      <Td>{patient.legacyPatientId}</Td>
-                      <Td>
-                        {patient.patientName.firstName}{" "}
-                        {patient.patientName.lastName}
-                      </Td>
-                      <Td>{patient.emailId}</Td>
-                      <Td>
-                        <div>
-                          {patient.assignedMeasures.map((measure) => (
-                            <Badge
-                              key={measure._id}
-                              colorScheme="blue"
-                              variant="subtle"
-                            >
-                              {measure.measureName} (
-                              {measure.measuringCadence.frequencyTimes} times
-                              per {measure.measuringCadence.frequencyUnit})
-                            </Badge>
-                          ))}
-                        </div>
-                      </Td>
-                      <Td>
-                        <Menu>
-                          <MenuButton
-                            as={Button}
-                            rightIcon={<ChevronDownIcon />}
-                            size="sm"
-                            variant="ghost"
-                          >
-                            Actions
-                          </MenuButton>
-                          <MenuList>
-                            <MenuItem
-                              icon={<ViewIcon />}
-                              onClick={() => handleView(patient)}
-                            >
-                              View Details
-                            </MenuItem>
-                            <MenuItem
-                              icon={<EditIcon />}
-                              onClick={() => handleEdit(patient)}
-                            >
-                              Edit
-                            </MenuItem>
-                            <MenuItem
-                              icon={<AddIcon />}
-                              onClick={() => handleInvite(patient)}
-                            >
-                              Invite
-                            </MenuItem>
-                          </MenuList>
-                        </Menu>
-                      </Td>
-                    </Tr>
-                  ))}
+                  {patients.map((patient) =>
+                    patient && patient.patientName ? (
+                      <Tr key={patient._id}>
+                        <Td>
+                          <div>{patient.legacyPatientId}</div>
+                        </Td>
+                        <Td>
+                          {patient.patientName.firstName}{" "}
+                          {patient.patientName.lastName}
+                        </Td>
+                        <Td>{patient.emailId}</Td>
+                        <Td>
+                          <div>
+                            {patient.assignedMeasures.map((measure) => (
+                              <Badge
+                                key={measure._id}
+                                colorScheme="white"
+                                variant="subtle"
+                              >
+                                {measure.measureName} (
+                                {measure.measuringCadence.frequencyTimes} times
+                                per {measure.measuringCadence.frequencyUnit})
+                              </Badge>
+                            ))}
+                          </div>
+                        </Td>
+                        <Td>
+                          <div>
+                            <Menu colorScheme="">
+                              <MenuButton
+                                as={Button}
+                                rightIcon={<ChevronDownIcon />}
+                                size="sm"
+                                variant="ghost"
+                                textColor={"fff"}
+                              >
+                                Actions
+                              </MenuButton>
+                              <MenuList>
+                                <MenuItem
+                                  icon={<ViewIcon />}
+                                  onClick={() => handleView(patient)}
+                                  textColor={"#fff"}
+                                  borderRadius={"0px"}
+                                >
+                                  Feedback Details
+                                </MenuItem>
+                                <MenuItem
+                                  icon={<EditIcon />}
+                                  onClick={() => handleEdit(patient)}
+                                  textColor={"#fff"}
+                                  borderRadius={"0px"}
+                                >
+                                  Edit Patient Details
+                                </MenuItem>
+                                <MenuItem
+                                  icon={<AddIcon />}
+                                  onClick={() => handleInvite(patient)}
+                                  textColor="#fff"
+                                  borderRadius={"0px"}
+                                >
+                                  Invite Patient
+                                </MenuItem>
+                              </MenuList>
+                            </Menu>
+                            <br />
+                          </div>
+                          {patient.inviteSent && (
+                            <div className="invite-sent">Invite Sent</div>
+                          )}
+                        </Td>
+                      </Tr>
+                    ) : null
+                  )}
                 </Tbody>
               </Table>
             </Box>

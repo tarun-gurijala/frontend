@@ -24,10 +24,28 @@ import {
   CardBody,
   CardHeader,
   SimpleGrid,
+  Menu as ChakraMenu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Checkbox as ChakraCheckbox,
+  Button as ChakraButton,
+  Switch as ChakraSwitch,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import "./PatientLookup.css";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { useState as useLocalState } from "react";
 
 interface PatientName {
   firstName: string;
@@ -60,6 +78,12 @@ const PatientDetails = () => {
   const [patientData, setPatientData] = useState<PatientData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useLocalState<{
+    [measureId: number]: "table" | "graph";
+  }>({});
+  const [graphFilters, setGraphFilters] = useLocalState<{
+    [measureId: number]: string[];
+  }>({});
 
   useEffect(() => {
     const fetchPatientDetails = async () => {
@@ -130,9 +154,109 @@ const PatientDetails = () => {
     return Array.from(allKeys);
   };
 
+  const renderFeedbackGraph = (measure: Measure) => {
+    if (!measure.feedbackRows.length) return null;
+    const columnHeaders = getColumnHeaders(measure.feedbackRows);
+    const dateKey =
+      columnHeaders.find((h) => h.toLowerCase().includes("date")) ||
+      columnHeaders[0];
+    const valueKeys = columnHeaders.filter((h) => h !== dateKey);
+    const colors = [
+      "#8884d8",
+      "#82ca9d",
+      "#ffc658",
+      "#ff7300",
+      "#0088FE",
+      "#00C49F",
+      "#FFBB28",
+      "#FF8042",
+      "#A28FD0",
+      "#FF6699",
+    ];
+    // Filter state for this measure
+    const selectedKeys = graphFilters[measure.measureId] ?? valueKeys;
+    const handleCheckboxChange = (key: string) => {
+      setGraphFilters((prev) => {
+        const current = prev[measure.measureId] ?? valueKeys;
+        if (current.includes(key)) {
+          // Remove
+          return {
+            ...prev,
+            [measure.measureId]: current.filter((k) => k !== key),
+          };
+        } else {
+          // Add
+          return { ...prev, [measure.measureId]: [...current, key] };
+        }
+      });
+    };
+    return (
+      <Box w="100%" h="340px" mb={6}>
+        <Box mb={2}>
+          <Text fontWeight="bold" mb={1}>
+            Filter Columns:
+          </Text>
+          <ChakraMenu closeOnSelect={false}>
+            <MenuButton
+              as={ChakraButton}
+              size="sm"
+              colorScheme="teal"
+              variant="outline"
+              color="white"
+            >
+              {selectedKeys.length} column{selectedKeys.length !== 1 ? "s" : ""}{" "}
+              selected
+            </MenuButton>
+            <MenuList minW="200px">
+              {valueKeys.map((key, idx) => (
+                <MenuItem key={key}>
+                  <ChakraCheckbox
+                    isChecked={selectedKeys.includes(key)}
+                    onChange={() => handleCheckboxChange(key)}
+                    colorScheme="teal"
+                    mr={2}
+                  >
+                    <span style={{ color: "white" }}>{key}</span>
+                  </ChakraCheckbox>
+                </MenuItem>
+              ))}
+            </MenuList>
+          </ChakraMenu>
+        </Box>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart
+            data={measure.feedbackRows}
+            margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey={dateKey}
+              tickFormatter={(v) =>
+                typeof v === "string" ? v.split("T")[0] : v
+              }
+            />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            {selectedKeys.map((key, idx) => (
+              <Line
+                key={key}
+                type="monotone"
+                dataKey={key}
+                stroke={colors[idx % colors.length]}
+                dot={false}
+                connectNulls
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </Box>
+    );
+  };
+
   const renderFeedbackTable = (measure: Measure) => {
     const columnHeaders = getColumnHeaders(measure.feedbackRows);
-
+    const mode = viewMode[measure.measureId] || "table";
     return (
       <Card mb={4}>
         <CardHeader>
@@ -140,34 +264,64 @@ const PatientDetails = () => {
           <HStack mt={2}>
             <Badge colorScheme="blue">ID: {measure.measureId}</Badge>
             <Badge colorScheme="green">{measure.measuringCadence}</Badge>
+            {/* Toggle Switch for Table/Graph */}
+            <HStack ml={4} spacing={2} align="center">
+              <Text
+                fontSize="sm"
+                color={mode === "table" ? "teal.500" : "gray.400"}
+              >
+                Table
+              </Text>
+              <ChakraSwitch
+                isChecked={mode === "graph"}
+                onChange={() =>
+                  setViewMode((prev) => ({
+                    ...prev,
+                    [measure.measureId]: mode === "table" ? "graph" : "table",
+                  }))
+                }
+                colorScheme="teal"
+                size="md"
+              />
+              <Text
+                fontSize="sm"
+                color={mode === "graph" ? "teal.500" : "gray.400"}
+              >
+                Graph
+              </Text>
+            </HStack>
           </HStack>
         </CardHeader>
         <CardBody>
           {measure.feedbackRows.length > 0 ? (
-            <Box overflowX="auto">
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    {columnHeaders.map((header) => (
-                      <Th key={header}>{header}</Th>
-                    ))}
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {measure.feedbackRows.map((feedback, index) => (
-                    <Tr key={index}>
+            mode === "table" ? (
+              <Box overflowX="auto">
+                <Table variant="simple">
+                  <Thead>
+                    <Tr>
                       {columnHeaders.map((header) => (
-                        <Td key={header}>
-                          {header.toLowerCase().includes("date")
-                            ? formatDate(feedback[header])
-                            : feedback[header]?.toString() || ""}
-                        </Td>
+                        <Th key={header}>{header}</Th>
                       ))}
                     </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </Box>
+                  </Thead>
+                  <Tbody>
+                    {measure.feedbackRows.map((feedback, index) => (
+                      <Tr key={index}>
+                        {columnHeaders.map((header) => (
+                          <Td key={header}>
+                            {header.toLowerCase().includes("date")
+                              ? formatDate(feedback[header])
+                              : feedback[header]?.toString() || ""}
+                          </Td>
+                        ))}
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </Box>
+            ) : (
+              renderFeedbackGraph(measure)
+            )
           ) : (
             <Text color="gray.500">
               No feedback records available for this measure

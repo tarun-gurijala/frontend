@@ -546,3 +546,21 @@ select.edit-input:focus {
 .kebab-menu.active .bar:nth-child(3) {
   transform: translateY(-8px) rotate(-45deg);
 }
+
+.container-test{
+  background-color: #fff;
+  background:#fff;
+}
+
+.patient-lookup{
+  background-color: #fff;
+  background:#fff;
+}
+
+.invite-sent{
+  color: #00a60b;
+  font-size: 12px;
+  font-weight: 1000;
+  padding-top: 10px;
+  padding-right: 20px;
+}

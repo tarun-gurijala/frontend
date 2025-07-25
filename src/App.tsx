@@ -12,6 +12,7 @@ import PatientLookup from "./PatientLookup";
 import Services from "./Services";
 import PatientDetails from "./PatientDetails";
 import logo from "./images/logo.webp";
+import Footer from "./components/Footer";
 
 function TopNavbar() {
   return (
@@ -19,6 +20,9 @@ function TopNavbar() {
       <div className="navbar-left">
         <span className="navbar-item">Phone: (555) 123-4567</span>
         <span className="navbar-item">Email: contact@xyz.com</span>
+      </div>
+      <div className="navbar-center">
+        <img src={logo} alt="Company Logo" className="top-navbar-logo" />
       </div>
       <div className="navbar-right">
         <span className="navbar-item">Hours: Mon-Fri 9AM-5PM</span>
@@ -142,29 +146,35 @@ function AppContent() {
     setUserType("");
   };
 
-  if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
-  }
-
   return (
     <div className="app-container">
-      <TopNavbar />
-      <Sidebar userType={userType} onLogout={handleLogout} />
-      <main className="main-content">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <header>
-                <h1>Welcome to INTERPERSONAL PSYCHIATRY</h1>
-              </header>
-            }
-          />
-          <Route path="/patient-lookup" element={<PatientLookup />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/patient/:patientId" element={<PatientDetails />} />
-        </Routes>
-      </main>
+      {isAuthenticated ? (
+        <>
+          <TopNavbar />
+          <Sidebar userType={userType} onLogout={handleLogout} />
+          <main className="main-content">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <header>
+                    <h1>Welcome to INTERPERSONAL PSYCHIATRY</h1>
+                  </header>
+                }
+              />
+              <Route path="/patient-lookup" element={<PatientLookup />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/patient/:patientId" element={<PatientDetails />} />
+            </Routes>
+          </main>
+        </>
+      ) : (
+        <>
+          <TopNavbar />
+          <Login onLogin={handleLogin} />
+        </>
+      )}
+      <Footer />
     </div>
   );
 }
