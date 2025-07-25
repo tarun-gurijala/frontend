@@ -183,71 +183,7 @@ interface PatientData {
   measuresWithFeedback: Measure[];
 }
 
-const hardcodedPatients: Patient[] = [
-  {
-    _id: "1",
-    patientId: 101,
-    legacyPatientId: "LGCY-001",
-    patientName: { firstName: "John", lastName: "Doe" },
-    emailId: "john.doe@example.com",
-    assignedMeasures: [
-      {
-        _id: "m1",
-        measureId: 1,
-        measureName: "Blood Pressure",
-        measuringCadence: { frequencyTimes: 1, frequencyUnit: "day" },
-      },
-      {
-        _id: "m2",
-        measureId: 2,
-        measureName: "Glucose Level",
-        measuringCadence: { frequencyTimes: 2, frequencyUnit: "day" },
-      },
-    ],
-    createdBy: "System",
-    createdAt: "2023-01-15T09:00:00Z",
-    updatedAt: "2023-05-20T14:30:00Z",
-    __v: 0,
-  },
-  {
-    _id: "2",
-    patientId: 102,
-    legacyPatientId: "LGCY-002",
-    patientName: { firstName: "Jane", lastName: "Smith" },
-    emailId: "jane.smith@example.com",
-    assignedMeasures: [
-      {
-        _id: "m3",
-        measureId: 3,
-        measureName: "Heart Rate",
-        measuringCadence: { frequencyTimes: 3, frequencyUnit: "week" },
-      },
-    ],
-    createdBy: "System",
-    createdAt: "2023-02-20T11:00:00Z",
-    updatedAt: "2023-05-21T16:45:00Z",
-    __v: 0,
-  },
-  {
-    _id: "3",
-    patientId: 103,
-    legacyPatientId: "LGCY-003",
-    patientName: { firstName: "Peter", lastName: "Jones" },
-    emailId: "peter.jones@example.com",
-    assignedMeasures: [
-      {
-        _id: "m4",
-        measureId: 1,
-        measureName: "Blood Pressure",
-        measuringCadence: { frequencyTimes: 1, frequencyUnit: "day" },
-      },
-    ],
-    createdBy: "System",
-    createdAt: "2023-03-10T18:00:00Z",
-    updatedAt: "2023-05-19T10:00:00Z",
-    __v: 0,
-  },
-];
+const hardcodedPatients: Patient[] = [];
 
 const EditModal = ({
   isOpen,
