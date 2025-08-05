@@ -66,6 +66,7 @@ interface PatientInfo {
   firstName: string;
   lastName: string;
   email: string;
+  measures?: AssignedMeasure[];
 }
 
 interface EditModalProps {
@@ -1701,6 +1702,7 @@ const Services = () => {
                 firstName: viewingPatient.patientName.firstName,
                 lastName: viewingPatient.patientName.lastName,
                 email: viewingPatient.emailId,
+                measures: viewingPatient.assignedMeasures,
               }}
             />
           )}
