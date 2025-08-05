@@ -84,6 +84,9 @@ const PatientDetails = () => {
   const [graphFilters, setGraphFilters] = useLocalState<{
     [measureId: number]: string[];
   }>({});
+  const [dateFilters, setDateFilters] = useLocalState<{
+    [measureId: number]: { startDate: string; endDate: string };
+  }>({});
 
   useEffect(() => {
     const fetchPatientDetails = async () => {
@@ -173,26 +176,77 @@ const PatientDetails = () => {
       "#A28FD0",
       "#FF6699",
     ];
-    // Filter state for this measure
+
     const selectedKeys = graphFilters[measure.measureId] ?? valueKeys;
+
     const handleCheckboxChange = (key: string) => {
       setGraphFilters((prev) => {
         const current = prev[measure.measureId] ?? valueKeys;
         if (current.includes(key)) {
-          // Remove
           return {
             ...prev,
             [measure.measureId]: current.filter((k) => k !== key),
           };
         } else {
-          // Add
           return { ...prev, [measure.measureId]: [...current, key] };
         }
       });
     };
+
+    const filteredData = measure.feedbackRows.filter((row) => {
+      const rowDate = new Date(row[dateKey]);
+      const { startDate, endDate } = dateFilters[measure.measureId] || {};
+      if (startDate && rowDate < new Date(startDate)) return false;
+      if (endDate && rowDate > new Date(endDate)) return false;
+      return true;
+    });
+
     return (
-      <Box w="100%" h="340px" mb={6}>
-        <Box mb={2}>
+      <Box w="100%" h="auto" mb={6}>
+        <Box mb={4}>
+          <Text fontWeight="bold" mb={1}>
+            Filter Dates:
+          </Text>
+          <HStack spacing={4} mb={2}>
+            <Box>
+              <Text fontSize="sm" color="black.500" mb={1}>
+                Start Date
+              </Text>
+              <input
+                type="date"
+                value={dateFilters[measure.measureId]?.startDate || ""}
+                onChange={(e) =>
+                  setDateFilters((prev) => ({
+                    ...prev,
+                    [measure.measureId]: {
+                      ...prev[measure.measureId],
+                      startDate: e.target.value,
+                    },
+                  }))
+                }
+              />
+            </Box>
+            <Box>
+              <Text fontSize="sm" color="black.500" mb={1}>
+                End Date
+              </Text>
+
+              <input
+                type="date"
+                value={dateFilters[measure.measureId]?.endDate || ""}
+                onChange={(e) =>
+                  setDateFilters((prev) => ({
+                    ...prev,
+                    [measure.measureId]: {
+                      ...prev[measure.measureId],
+                      endDate: e.target.value,
+                    },
+                  }))
+                }
+              />
+            </Box>
+          </HStack>
+
           <Text fontWeight="bold" mb={1}>
             Filter Columns:
           </Text>
@@ -204,8 +258,8 @@ const PatientDetails = () => {
               variant="outline"
               color="white"
             >
-              {selectedKeys.length} column{selectedKeys.length !== 1 ? "s" : ""}{" "}
-              selected
+              {selectedKeys.length} column
+              {selectedKeys.length !== 1 ? "s" : ""} selected
             </MenuButton>
             <MenuList minW="200px">
               {valueKeys.map((key, idx) => (
@@ -223,33 +277,38 @@ const PatientDetails = () => {
             </MenuList>
           </ChakraMenu>
         </Box>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart
-            data={measure.feedbackRows}
-            margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey={dateKey}
-              tickFormatter={(v) =>
-                typeof v === "string" ? v.split("T")[0] : v
-              }
-            />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            {selectedKeys.map((key, idx) => (
-              <Line
-                key={key}
-                type="monotone"
-                dataKey={key}
-                stroke={colors[idx % colors.length]}
-                dot={false}
-                connectNulls
+
+        {filteredData.length === 0 ? (
+          <Text color="gray.500">No data in the selected date range.</Text>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart
+              data={filteredData}
+              margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey={dateKey}
+                tickFormatter={(v) =>
+                  typeof v === "string" ? v.split("T")[0] : v
+                }
               />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              {selectedKeys.map((key, idx) => (
+                <Line
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  stroke={colors[idx % colors.length]}
+                  dot={false}
+                  connectNulls
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        )}
       </Box>
     );
   };
@@ -264,7 +323,6 @@ const PatientDetails = () => {
           <HStack mt={2}>
             <Badge colorScheme="blue">ID: {measure.measureId}</Badge>
             <Badge colorScheme="green">{measure.measuringCadence}</Badge>
-            {/* Toggle Switch for Table/Graph */}
             <HStack ml={4} spacing={2} align="center">
               <Text
                 fontSize="sm"
