@@ -31,6 +31,7 @@ import {
   Checkbox as ChakraCheckbox,
   Button as ChakraButton,
   ButtonGroup,
+  Select,
 } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
@@ -89,6 +90,9 @@ const PatientDetails = () => {
   const [dateFilters, setDateFilters] = useLocalState<{
     [measureId: number]: { startDate: string; endDate: string };
   }>({});
+  const [selectedMeasureId, setSelectedMeasureId] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchPatientDetails = async () => {
@@ -139,13 +143,13 @@ const PatientDetails = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    return `${month}/${day}/${year} ${hours}:${minutes}`;
   };
 
   const getColumnHeaders = (feedbackRows: FeedbackRow[]): string[] => {
@@ -206,7 +210,7 @@ const PatientDetails = () => {
     });
 
     return (
-      <Box w="100%" h="auto" mb={6}>
+      <Box w="100%" minW="100%" h="auto" mb={6}>
         <Box mb={4}>
           <Text fontWeight="bold" mb={1}>
             Filter Dates:
@@ -309,6 +313,7 @@ const PatientDetails = () => {
                   type="monotone"
                   dataKey={key}
                   stroke={colors[idx % colors.length]}
+                  strokeWidth={3}
                   dot={false}
                   connectNulls
                   name={key}
@@ -368,7 +373,7 @@ const PatientDetails = () => {
     });
 
     return (
-      <Box w="100%" h="auto" mb={6}>
+      <Box w="100%" minW="100%" h="auto" mb={6}>
         <Box mb={4}>
           <Text fontWeight="bold" mb={1}>
             Filter Dates:
@@ -522,8 +527,9 @@ const PatientDetails = () => {
           <Heading size="md">{measure.measureName}</Heading>
           <HStack mt={2} justify="space-between" wrap="wrap">
             <HStack>
-              <Badge colorScheme="blue">ID: {measure.measureId}</Badge>
-              <Badge colorScheme="green">{measure.measuringCadence}</Badge>
+              <Badge colorScheme="green">
+                MEASURING CADENCE: {measure.measuringCadence}
+              </Badge>
             </HStack>
             <ButtonGroup size="sm" isAttached variant="outline">
               <Button
@@ -563,42 +569,206 @@ const PatientDetails = () => {
           </HStack>
         </CardHeader>
         <CardBody>
-          {measure.feedbackRows.length > 0 ? (
-            mode === "table" ? (
-              <Box overflowX="auto">
-                <Table variant="simple">
-                  <Thead>
-                    <Tr>
-                      {columnHeaders.map((header) => (
-                        <Th key={header}>{header}</Th>
-                      ))}
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {measure.feedbackRows.map((feedback, index) => (
-                      <Tr key={index}>
-                        {columnHeaders.map((header) => (
-                          <Td key={header}>
-                            {header.toLowerCase().includes("date")
-                              ? formatDate(feedback[header])
-                              : feedback[header]?.toString() || ""}
-                          </Td>
-                        ))}
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </Box>
-            ) : mode === "lineChart" ? (
-              renderFeedbackLineChart(measure)
+          <Box minW="100%" w="100%">
+            {measure.feedbackRows.length > 0 ? (
+              mode === "table" ? (
+                <Box w="100%" minW="100%" maxW="100%">
+                  {/* Date Filter for Table */}
+                  <Box mb={4}>
+                    <Text fontWeight="bold" mb={1}>
+                      Filter Dates:
+                    </Text>
+                    <HStack spacing={4} mb={2}>
+                      <Box>
+                        <Text fontSize="sm" color="black.500" mb={1}>
+                          Start Date
+                        </Text>
+                        <input
+                          type="date"
+                          value={
+                            dateFilters[measure.measureId]?.startDate || ""
+                          }
+                          onChange={(e) =>
+                            setDateFilters((prev) => ({
+                              ...prev,
+                              [measure.measureId]: {
+                                ...prev[measure.measureId],
+                                startDate: e.target.value,
+                              },
+                            }))
+                          }
+                        />
+                      </Box>
+                      <Box>
+                        <Text fontSize="sm" color="black.500" mb={1}>
+                          End Date
+                        </Text>
+                        <input
+                          type="date"
+                          value={dateFilters[measure.measureId]?.endDate || ""}
+                          onChange={(e) =>
+                            setDateFilters((prev) => ({
+                              ...prev,
+                              [measure.measureId]: {
+                                ...prev[measure.measureId],
+                                endDate: e.target.value,
+                              },
+                            }))
+                          }
+                        />
+                      </Box>
+                    </HStack>
+                  </Box>
+
+                  {/* Filtered Table Data */}
+                  <Box overflowX="auto" w="100%" minW="100%" maxW="100%">
+                    <Table
+                      variant="simple"
+                      w="100%"
+                      minW="100%"
+                      border="1px"
+                      borderColor="gray.300"
+                    >
+                      <Thead>
+                        <Tr>
+                          {columnHeaders.map((header, idx) => {
+                            const colors = [
+                              "#8884d8",
+                              "#82ca9d",
+                              "#ffc658",
+                              "#ff7300",
+                              "#0088FE",
+                              "#00C49F",
+                              "#FFBB28",
+                              "#FF8042",
+                              "#A28FD0",
+                              "#FF6699",
+                            ];
+                            const isDateColumn = header
+                              .toLowerCase()
+                              .includes("date");
+                            const color = isDateColumn
+                              ? "#666666"
+                              : colors[idx % colors.length];
+
+                            return (
+                              <Th
+                                key={header}
+                                border="1px solid"
+                                borderColor="gray.300"
+                                bg={isDateColumn ? "gray.200" : `${color}40`}
+                                color="black"
+                                fontWeight="bold"
+                                textAlign="center"
+                                py={3}
+                                px={2}
+                                maxW="200px"
+                                overflow="hidden"
+                                textOverflow="ellipsis"
+                                whiteSpace="nowrap"
+                              >
+                                {header}
+                              </Th>
+                            );
+                          })}
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {(() => {
+                          const filteredData = measure.feedbackRows.filter(
+                            (row) => {
+                              const dateKey =
+                                columnHeaders.find((h) =>
+                                  h.toLowerCase().includes("date")
+                                ) || columnHeaders[0];
+                              const rowDate = new Date(row[dateKey]);
+                              const { startDate, endDate } =
+                                dateFilters[measure.measureId] || {};
+                              if (startDate && rowDate < new Date(startDate))
+                                return false;
+                              if (endDate && rowDate > new Date(endDate))
+                                return false;
+                              return true;
+                            }
+                          );
+
+                          if (filteredData.length === 0) {
+                            return (
+                              <Tr>
+                                <Td
+                                  colSpan={columnHeaders.length}
+                                  textAlign="center"
+                                  border="1px solid"
+                                  borderColor="gray.300"
+                                  py={4}
+                                >
+                                  No data in the selected date range.
+                                </Td>
+                              </Tr>
+                            );
+                          }
+
+                          return filteredData.map((feedback, index) => (
+                            <Tr key={index} _hover={{ bg: "gray.50" }}>
+                              {columnHeaders.map((header, idx) => {
+                                const colors = [
+                                  "#8884d8",
+                                  "#82ca9d",
+                                  "#ffc658",
+                                  "#ff7300",
+                                  "#0088FE",
+                                  "#00C49F",
+                                  "#FFBB28",
+                                  "#FF8042",
+                                  "#A28FD0",
+                                  "#FF6699",
+                                ];
+                                const isDateColumn = header
+                                  .toLowerCase()
+                                  .includes("date");
+                                const color = isDateColumn
+                                  ? "#666666"
+                                  : colors[idx % colors.length];
+
+                                return (
+                                  <Td
+                                    key={header}
+                                    border="1px solid"
+                                    borderColor="gray.300"
+                                    bg="white"
+                                    color="gray.700"
+                                    py={2}
+                                    px={2}
+                                    textAlign={isDateColumn ? "center" : "left"}
+                                    maxW="200px"
+                                    overflow="hidden"
+                                    textOverflow="ellipsis"
+                                    whiteSpace="nowrap"
+                                  >
+                                    {header.toLowerCase().includes("date")
+                                      ? formatDate(feedback[header])
+                                      : feedback[header]?.toString() || ""}
+                                  </Td>
+                                );
+                              })}
+                            </Tr>
+                          ));
+                        })()}
+                      </Tbody>
+                    </Table>
+                  </Box>
+                </Box>
+              ) : mode === "lineChart" ? (
+                renderFeedbackLineChart(measure)
+              ) : (
+                renderFeedbackBarChart(measure)
+              )
             ) : (
-              renderFeedbackBarChart(measure)
-            )
-          ) : (
-            <Text color="gray.500">
-              No feedback records available for this measure
-            </Text>
-          )}
+              <Text color="gray.500">
+                No feedback records available for this measure
+              </Text>
+            )}
+          </Box>
         </CardBody>
       </Card>
     );
@@ -716,11 +886,103 @@ const PatientDetails = () => {
             {patientData.measuresWithFeedback &&
             patientData.measuresWithFeedback.length > 0 ? (
               <VStack spacing={4} align="stretch">
-                {patientData.measuresWithFeedback.map((measure) => (
-                  <div key={measure.measureId}>
-                    {renderFeedbackTable(measure)}
-                  </div>
-                ))}
+                {/* Measure Selection Dropdown */}
+                <Box mb={4}>
+                  <HStack spacing={4} align="center">
+                    <Text fontWeight="bold" color="gray.600">
+                      Select Measure to Prioritize:
+                    </Text>
+                    <Select
+                      placeholder="Choose a measure"
+                      value={selectedMeasureId || ""}
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                        setSelectedMeasureId(
+                          e.target.value ? Number(e.target.value) : null
+                        )
+                      }
+                      maxW="300px"
+                      bg="white"
+                      borderColor="gray.300"
+                      _hover={{ borderColor: "blue.400" }}
+                      _focus={{ borderColor: "blue.500", boxShadow: "outline" }}
+                    >
+                      {patientData.measuresWithFeedback.map((measure) => (
+                        <option
+                          key={measure.measureId}
+                          value={measure.measureId}
+                        >
+                          {measure.measureName} (ID: {measure.measureId})
+                        </option>
+                      ))}
+                    </Select>
+                    {selectedMeasureId && (
+                      <Button
+                        size="sm"
+                        colorScheme="gray"
+                        variant="outline"
+                        onClick={() => setSelectedMeasureId(null)}
+                      >
+                        Clear Selection
+                      </Button>
+                    )}
+                  </HStack>
+                </Box>
+
+                {/* Reordered Measures List */}
+                {(() => {
+                  if (!selectedMeasureId) {
+                    // Show measures in original order
+                    return patientData.measuresWithFeedback.map((measure) => (
+                      <div key={measure.measureId}>
+                        {renderFeedbackTable(measure)}
+                      </div>
+                    ));
+                  } else {
+                    // Reorder: selected measure first, then the rest
+                    const selectedMeasure =
+                      patientData.measuresWithFeedback.find(
+                        (m) => m.measureId === selectedMeasureId
+                      );
+                    const otherMeasures =
+                      patientData.measuresWithFeedback.filter(
+                        (m) => m.measureId !== selectedMeasureId
+                      );
+
+                    return (
+                      <>
+                        {/* Selected measure at the top */}
+                        {selectedMeasure && (
+                          <Box
+                            key={selectedMeasure.measureId}
+                            border="2px solid"
+                            borderColor="blue.300"
+                            borderRadius="lg"
+                            p={2}
+                            mb={4}
+                          >
+                            <Text
+                              fontSize="sm"
+                              fontWeight="bold"
+                              color="blue.600"
+                              mb={2}
+                              textAlign="center"
+                            >
+                              ⭐ PRIORITY MEASURE
+                            </Text>
+                            {renderFeedbackTable(selectedMeasure)}
+                          </Box>
+                        )}
+
+                        {/* Other measures below */}
+                        {otherMeasures.map((measure) => (
+                          <div key={measure.measureId}>
+                            {renderFeedbackTable(measure)}
+                          </div>
+                        ))}
+                      </>
+                    );
+                  }
+                })()}
               </VStack>
             ) : (
               <Text color="gray.500">No measures assigned to this patient</Text>

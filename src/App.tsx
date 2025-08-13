@@ -14,25 +14,7 @@ import PatientDetails from "./PatientDetails";
 import logo from "./images/logo.webp";
 import Footer from "./components/Footer";
 
-function TopNavbar() {
-  return (
-    <nav className="top-navbar">
-      <div className="navbar-left">
-        <span className="navbar-item">Phone: (555) 123-4567</span>
-        <span className="navbar-item">Email: contact@xyz.com</span>
-      </div>
-      <div className="navbar-center">
-        <img src={logo} alt="Company Logo" className="top-navbar-logo" />
-      </div>
-      <div className="navbar-right">
-        <span className="navbar-item">Hours: Mon-Fri 9AM-5PM</span>
-        <span className="navbar-item">Location: 123 Medical Center Dr</span>
-      </div>
-    </nav>
-  );
-}
-
-function Sidebar({
+function TopNavbar({
   userType,
   onLogout,
 }: {
@@ -41,94 +23,97 @@ function Sidebar({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const isAuthenticated = userType !== "";
 
   const handleNavigation = (path: string) => {
     navigate(path);
   };
 
   return (
-    <>
-      <div
-        className="sidebar-trigger"
-        onMouseEnter={() => setIsSidebarVisible(true)}
-      />
-      <aside
-        className={`sidebar ${isSidebarVisible ? "visible" : ""}`}
-        onMouseLeave={() => setIsSidebarVisible(false)}
-      >
-        <div className="sidebar-content">
-          <div className="logo-container">
-            <img src={logo} alt="Company Logo" className="logo" />
-          </div>
-          <h2>INTERPERSONAL PSYCHIATRY</h2>
-          <div className="user-info">
-            <span className="user-type">
-              {userType === "Admin" ? "Administrator" : "User"}
-            </span>
-          </div>
-          <nav>
-            <ul>
-              <li>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigation("/");
-                  }}
-                  className={location.pathname === "/" ? "active" : ""}
-                >
-                  Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigation("/patient-lookup");
-                  }}
-                  className={
-                    location.pathname === "/patient-lookup" ? "active" : ""
-                  }
-                >
-                  Patient Lookup
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavigation("/services");
-                  }}
-                  className={location.pathname === "/services" ? "active" : ""}
-                >
-                  Services
-                </a>
-              </li>
+    <nav className={`top-navbar ${isAuthenticated ? "authenticated" : ""}`}>
+      <div className="navbar-center">
+        <img src={logo} alt="Company Logo" className="top-navbar-logo" />
+        <div className="navbar-title">INTERPERSONAL PSYCHIATRY</div>
+      </div>
+
+      <div className="navbar-right">
+        {isAuthenticated ? (
+          <>
+            <div className="navbar-navigation">
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigation("/");
+                }}
+                className={`nav-link ${
+                  location.pathname === "/" ? "active" : ""
+                }`}
+              >
+                Home
+              </a>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigation("/patient-lookup");
+                }}
+                className={`nav-link ${
+                  location.pathname === "/patient-lookup" ? "active" : ""
+                }`}
+              >
+                Patient Lookup
+              </a>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavigation("/services");
+                }}
+                className={`nav-link ${
+                  location.pathname === "/services" ? "active" : ""
+                }`}
+              >
+                Services
+              </a>
               {userType === "Admin" && (
-                <li>
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavigation("/admin");
-                    }}
-                    className={location.pathname === "/admin" ? "active" : ""}
-                  >
-                    Admin Panel
-                  </a>
-                </li>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation("/admin");
+                  }}
+                  className={`nav-link ${
+                    location.pathname === "/admin" ? "active" : ""
+                  }`}
+                >
+                  Admin Panel
+                </a>
               )}
-            </ul>
-          </nav>
-          <button onClick={onLogout} className="logout-button">
-            Logout
-          </button>
-        </div>
-      </aside>
-    </>
+            </div>
+
+            <div className="navbar-contact">
+              <span className="navbar-item">Email: contact@xyz.com</span>
+              <span className="navbar-item">Phone: (555) 123-4567</span>
+            </div>
+            <div className="navbar-contact">
+              <span className="navbar-item">Hours: Mon-Fri 9AM-5PM</span>
+              <span className="navbar-item">
+                Location: 123 Medical Center Dr
+              </span>
+            </div>
+            <div className="navbar-user-info">
+              <span className="user-type">
+                {userType === "Admin" ? "Administrator" : "User"}
+              </span>
+              <button onClick={onLogout} className="logout-button">
+                Logout
+              </button>
+            </div>
+          </>
+        ) : null}
+      </div>
+    </nav>
   );
 }
 
@@ -150,8 +135,7 @@ function AppContent() {
     <div className="app-container">
       {isAuthenticated ? (
         <>
-          <TopNavbar />
-          <Sidebar userType={userType} onLogout={handleLogout} />
+          <TopNavbar userType={userType} onLogout={handleLogout} />
           <main className="main-content">
             <Routes>
               <Route
@@ -170,7 +154,7 @@ function AppContent() {
         </>
       ) : (
         <>
-          <TopNavbar />
+          <TopNavbar userType="" onLogout={() => {}} />
           <Login onLogin={handleLogin} />
         </>
       )}

@@ -1610,38 +1610,38 @@ const Services = () => {
                         </Td>
                         <Td>
                           <div>
-                            <Menu colorScheme="">
+                            <Menu>
                               <MenuButton
                                 as={Button}
                                 rightIcon={<ChevronDownIcon />}
                                 size="sm"
-                                variant="ghost"
-                                textColor={"fff"}
+                                colorScheme="blue"
+                                variant="outline"
                               >
                                 Actions
                               </MenuButton>
-                              <MenuList>
+                              <MenuList bg="blue.50" borderColor="blue.200">
                                 <MenuItem
                                   icon={<ViewIcon />}
                                   onClick={() => handleView(patient)}
-                                  textColor={"#fff"}
-                                  borderRadius={"0px"}
+                                  _hover={{ bg: "blue.100" }}
+                                  color="blue.800"
                                 >
                                   Feedback Details
                                 </MenuItem>
                                 <MenuItem
                                   icon={<EditIcon />}
                                   onClick={() => handleEdit(patient)}
-                                  textColor={"#fff"}
-                                  borderRadius={"0px"}
+                                  _hover={{ bg: "blue.100" }}
+                                  color="blue.800"
                                 >
                                   Edit Patient Details
                                 </MenuItem>
                                 <MenuItem
                                   icon={<AddIcon />}
                                   onClick={() => handleInvite(patient)}
-                                  textColor="#fff"
-                                  borderRadius={"0px"}
+                                  _hover={{ bg: "blue.100" }}
+                                  color="blue.800"
                                 >
                                   Invite Patient
                                 </MenuItem>
