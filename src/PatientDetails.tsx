@@ -261,8 +261,8 @@ const PatientDetails = () => {
             <MenuButton
               as={ChakraButton}
               size="sm"
-              colorScheme="teal"
-              variant="outline"
+              colorScheme="blue"
+              variant="solid"
               color="white"
             >
               {selectedKeys.length} column
@@ -270,11 +270,13 @@ const PatientDetails = () => {
             </MenuButton>
             <MenuList minW="200px">
               {valueKeys.map((key, idx) => (
-                <MenuItem key={key}>
+                <MenuItem key={key} bg="blue.200">
                   <ChakraCheckbox
                     isChecked={selectedKeys.includes(key)}
                     onChange={() => handleCheckboxChange(key)}
                     colorScheme="teal"
+                    variant="solid"
+                    color="white"
                     mr={2}
                   >
                     <span style={{ color: "white" }}>{key}</span>
@@ -292,7 +294,7 @@ const PatientDetails = () => {
             Please select at least one column to display.
           </Text>
         ) : (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={500}>
             <LineChart
               data={filteredData}
               margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
@@ -424,8 +426,8 @@ const PatientDetails = () => {
             <MenuButton
               as={ChakraButton}
               size="sm"
-              colorScheme="teal"
-              variant="outline"
+              colorScheme="blue"
+              variant="solid"
               color="white"
             >
               {selectedKeys.length} column
@@ -433,11 +435,13 @@ const PatientDetails = () => {
             </MenuButton>
             <MenuList minW="200px">
               {valueKeys.map((key, idx) => (
-                <MenuItem key={key}>
+                <MenuItem key={key} bg="blue.200">
                   <ChakraCheckbox
                     isChecked={selectedKeys.includes(key)}
                     onChange={() => handleCheckboxChange(key)}
-                    colorScheme="teal"
+                    colorScheme="blue"
+                    variant="solid"
+                    color="white"
                     mr={2}
                   >
                     <span style={{ color: "white" }}>{key}</span>
@@ -456,16 +460,7 @@ const PatientDetails = () => {
           </Text>
         ) : (
           <Box>
-            {/* Temporary debug info */}
-            <Text fontSize="xs" color="gray.400" mb={1}>
-              Debug: {selectedKeys.length} columns selected:{" "}
-              {selectedKeys.join(", ")}
-            </Text>
-            <Text fontSize="xs" color="gray.400" mb={2}>
-              Data points: {filteredData.length}, Date key: {dateKey}
-            </Text>
-
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={500}>
               <BarChart
                 data={filteredData}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}

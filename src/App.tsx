@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -13,6 +13,12 @@ import Services from "./Services";
 import PatientDetails from "./PatientDetails";
 import logo from "./images/logo.webp";
 import Footer from "./components/Footer";
+
+function setTitle() {
+  useEffect(() => {
+    document.title = "My Page Title";
+  }, []);
+}
 
 function TopNavbar({
   userType,
@@ -133,6 +139,7 @@ function AppContent() {
 
   return (
     <div className="app-container">
+      <title>IP-Mind-Metrics</title>
       {isAuthenticated ? (
         <>
           <TopNavbar userType={userType} onLogout={handleLogout} />
